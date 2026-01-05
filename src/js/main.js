@@ -14,10 +14,18 @@ var timeToMinSec = (time) => {
   return minutes + ":" + seconds;
 };
 
+var setProgress = (current, duration) => {
+  var safeDuration = duration || 0;
+  var percentage =
+    safeDuration === 0 ? 0 : Math.min((current / safeDuration) * 100, 100);
+  progressInner.style.width = percentage + "%";
+};
+
 pauseButton.style.display = "none";
 
 audio.addEventListener("loadedmetadata", () => {
   totalTime.textContent = timeToMinSec(audio.duration);
+  setProgress(0, audio.duration);
 });
 
 playButton.addEventListener("click", () => {
@@ -35,6 +43,5 @@ pauseButton.addEventListener("click", () => {
 audio.addEventListener("timeupdate", () => {
   currentTime.textContent = timeToMinSec(audio.currentTime);
   totalTime.textContent = timeToMinSec(audio.duration);
-  var percentage = (audio.currentTime / audio.duration) * 100;
-  progressInner.style.width = percentage + "%";
+  setProgress(audio.currentTime, audio.duration);
 });
