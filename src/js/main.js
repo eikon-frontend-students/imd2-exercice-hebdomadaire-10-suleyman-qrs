@@ -1,47 +1,45 @@
-var player = document.querySelector(".player");
-var audio = player.querySelector("audio");
-var playButton = player.querySelector(".play");
-var pauseButton = player.querySelector(".pause");
-var currentTime = player.querySelector(".current");
-var totalTime = player.querySelector(".total");
-var progressInner = player.querySelector(".player-progress-inner");
+const player = document.querySelector(".player");
+const audio = player.querySelector("audio");
+const playButton = player.querySelector(".play");
+const pauseButton = player.querySelector(".pause");
+const currentTime = player.querySelector(".current");
+const totalTime = player.querySelector(".total");
+const progressInner = player.querySelector(".player-progress-inner");
 
-var timeToMinSec = (time) => {
-  var minutes = Math.floor(time / 60);
-  var seconds = Math.floor(time % 60)
-    .toString()
-    .padStart(2, "0");
-  return minutes + ":" + seconds;
+const formatTime = (time) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
 };
 
-var setProgress = (current, duration) => {
-  var safeDuration = duration || 0;
-  var percentage =
+const setProgress = (current, duration) => {
+  const safeDuration = duration || 0;
+  const percentage =
     safeDuration === 0 ? 0 : Math.min((current / safeDuration) * 100, 100);
-  progressInner.style.width = percentage + "%";
+  progressInner.style.width = `${percentage}%`;
 };
 
-pauseButton.style.display = "none";
+const setPlaybackState = (isPlaying) => {
+  playButton.style.display = isPlaying ? "none" : "flex";
+  pauseButton.style.display = isPlaying ? "flex" : "none";
+};
 
 audio.addEventListener("loadedmetadata", () => {
-  totalTime.textContent = timeToMinSec(audio.duration);
+  totalTime.textContent = formatTime(audio.duration);
   setProgress(0, audio.duration);
 });
 
 playButton.addEventListener("click", () => {
   audio.play();
-  playButton.style.display = "none";
-  pauseButton.style.display = "flex";
+  setPlaybackState(true);
 });
 
 pauseButton.addEventListener("click", () => {
   audio.pause();
-  playButton.style.display = "flex";
-  pauseButton.style.display = "none";
+  setPlaybackState(false);
 });
 
 audio.addEventListener("timeupdate", () => {
-  currentTime.textContent = timeToMinSec(audio.currentTime);
-  totalTime.textContent = timeToMinSec(audio.duration);
+  currentTime.textContent = formatTime(audio.currentTime);
   setProgress(audio.currentTime, audio.duration);
 });
